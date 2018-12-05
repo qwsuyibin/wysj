@@ -8,6 +8,7 @@ import com.facebook.logger.FacebookLogger;
 import com.facebook.login.FacebookLogin;
 import com.google.pay.GooglePay;
 import com.google.pay.GooglePayListener;
+import com.kochava.KochavaLogger;
 
 /**
  * Created by Administrator on 2018/11/30.
@@ -19,18 +20,26 @@ public class SdkManage {
     private FacebookLogin facebookLogin;
     private FacebookLogger facebookLogger;
     private FacebookShare facebookShare;
+    private KochavaLogger kochavaLogger;
     public SdkManage(Activity activity)
     {
         mainActivity = activity;
+    }
+    public void init()
+    {
+        googlePay = new GooglePay(mainActivity);
+        facebookLogin = new FacebookLogin(mainActivity);
+        facebookLogger = new FacebookLogger(mainActivity);
+        facebookShare = new FacebookShare(mainActivity);
+        kochavaLogger = new KochavaLogger(mainActivity);
     }
     /**
      * GooglePay
      * 返回谷歌充值带充值(Pay)
      * @return FacebookShare
      */
-    public GooglePay initGooglePay(GooglePayListener plistener)
+    public GooglePay getGooglePay()
     {
-        googlePay = new GooglePay(mainActivity,plistener);
         return googlePay;
     }
     /**
@@ -38,9 +47,8 @@ public class SdkManage {
      * 返回登录类 带登录（Login）和退出登录方法（LoginOut）
      * @return FacebookLogin
      */
-    public FacebookLogin initFaceBookLogin()
+    public FacebookLogin getFaceBookLogin()
     {
-        facebookLogin = new FacebookLogin(mainActivity);
         return facebookLogin;
     }
     /**
@@ -48,9 +56,8 @@ public class SdkManage {
      * 返回脸书记录
      * @return FacebookLogger
      */
-    public FacebookLogger initFaceBookLogger()
+    public FacebookLogger getFaceBookLogger()
     {
-        facebookLogger = new FacebookLogger(mainActivity);
         return facebookLogger;
     }
     /**
@@ -58,10 +65,18 @@ public class SdkManage {
      * 返回脸书分享
      * @return FacebookShare
      */
-    public FacebookShare initFaceBookShare()
+    public FacebookShare getFaceBookShare()
     {
-        facebookShare = new FacebookShare(mainActivity);
         return facebookShare;
+    }
+    /**
+     * KochavaLogger
+     * 返回Kochava记录
+     * @return KochavaLogger
+     */
+    public KochavaLogger getKochavaLogger()
+    {
+        return kochavaLogger;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

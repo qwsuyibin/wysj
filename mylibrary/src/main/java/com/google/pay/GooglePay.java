@@ -13,15 +13,18 @@ import com.google.pay.googlepay.Inventory;
 import com.google.pay.googlepay.Purchase;
 import com.manage.RCEnum;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class GooglePay {
+    public ArrayList<Purchase> purchasesArr = new ArrayList<Purchase>();
     private Activity mainActivity;
     private IabHelper mHelper;
     private String base64EncodedPublicKey;
     private Inventory unusedInv;
     private String TAG = "GooglePay";
     private GooglePayListener payListener;
-    public GooglePay(Activity activity,GooglePayListener plistener) {
-        payListener = plistener;
+    public GooglePay(Activity activity) {
         mainActivity = activity;
         init();
     }
@@ -42,12 +45,14 @@ public class GooglePay {
         }
         GooglePayOnCreate();
     }
-    public void Pay(String pid)
+    public void Pay(String pid,GooglePayListener plistener)
     {
+        payListener = plistener;
         strarPay(pid,"");
     }
-    public void Pay(String pid,String extra)
+    public void Pay(String pid,String extra,GooglePayListener plistener)
     {
+        payListener = plistener;
         strarPay(pid,extra);
     }
     private void strarPay(String pid,String extra) {
@@ -88,7 +93,10 @@ public class GooglePay {
             if (result.isFailure()) {
                 //购买商品失败
                 Log.i(TAG,"GooglePay BuyError=========================>" + result.isFailure());
-                payListener.PayError(result);
+                if(payListener != null) {
+                    payListener.PayError(result);
+                    payListener = null;
+                }
                 return;
             }
             Log.i(TAG,"GooglePay =========================>" + purchase.getSku());
@@ -98,7 +106,6 @@ public class GooglePay {
                 // TODO Auto-generated catchblock
                 e.printStackTrace();
             }
-            Log.i(TAG,"GooglePay 购买成功");
         }
     };
 
@@ -109,7 +116,13 @@ public class GooglePay {
             if (result.isSuccess()) {
                 //消费成功
                 Log.i(TAG,"GooglePay Consumptionsuccessful. Provisioning.");
-                payListener.PayOver(purchase);
+                if(payListener != null)
+                {
+                    payListener.PayOver(purchase);
+                    payListener = null;
+                }
+                else
+                    purchasesArr.add(purchase);
             } else {
                 //消费失败
                 Log.i(TAG,"GooglePay Error whileconsuming: " + result);
