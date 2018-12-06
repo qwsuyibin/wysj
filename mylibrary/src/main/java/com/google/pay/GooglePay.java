@@ -40,7 +40,7 @@ public class GooglePay {
         }
         if(base64EncodedPublicKey == null)
         {
-            Log.i(TAG,"base64EncodedPublicKey未配置");
+            Log.i(TAG,"publickey未配置");
             return;
         }
         GooglePayOnCreate();
@@ -141,6 +141,7 @@ public class GooglePay {
         }
     };
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mHelper.handleActivityResult(requestCode, resultCode, data);
+        if(requestCode == RCEnum.E_GOOGLE_PAY)
+            mHelper.handleActivityResult(requestCode, resultCode, data);
     }
 }

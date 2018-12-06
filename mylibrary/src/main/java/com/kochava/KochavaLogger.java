@@ -32,7 +32,7 @@ public class KochavaLogger {
         }
         if(kochavakey == null)
         {
-            Log.i(TAG,"base64EncodedPublicKey未配置");
+            Log.i(TAG,"kochavakey未配置");
             return;
         }
         Tracker.configure(new Tracker.Configuration(mainActivity.getApplicationContext())

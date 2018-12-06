@@ -42,21 +42,23 @@ public class FacebookShare {
     }
     private void init()
     {
-
         callbackManagerfx = CallbackManager.Factory.create();
         shareDialogfx = new ShareDialog(mainActivity);
         shareDialogfx.registerCallback(callbackManagerfx,
                 new FacebookCallback<Sharer.Result>() {
                     @Override
                     public void onSuccess(Sharer.Result result) {
+                        shareType = 0;
                         shareListener.ShareSucces(result);
                     }
                     @Override
                     public void onCancel() {
+                        shareType = 0;
                         shareListener.ShareCancel();
                     }
                     @Override
                     public void onError(FacebookException error) {
+                        shareType = 0;
                         shareListener.ShareError(error);
                     }
                 });
@@ -67,14 +69,17 @@ public class FacebookShare {
                 new FacebookCallback<Sharer.Result>() {
                     @Override
                     public void onSuccess(Sharer.Result result) {
+                        shareType = 0;
                         shareListener.ShareSucces(result);
                     }
                     @Override
                     public void onCancel() {
+                        shareType = 0;
                         shareListener.ShareCancel();
                     }
                     @Override
                     public void onError(FacebookException error) {
+                        shareType = 0;
                         shareListener.ShareError(error);
                     }
                 });
@@ -84,14 +89,17 @@ public class FacebookShare {
         shareDialogfriend.registerCallback(callbackManagerFriend,new FacebookCallback<Sharer.Result>() {
                     @Override
                     public void onSuccess(Sharer.Result result) {
+                        shareType = 0;
                         shareListener.ShareSucces(result);
                     }
                     @Override
                     public void onCancel() {
+                        shareType = 0;
                         shareListener.ShareCancel();
                     }
                     @Override
                     public void onError(FacebookException error) {
+                        shareType = 0;
                         shareListener.ShareError(error);
                     }
                 });
@@ -102,16 +110,19 @@ public class FacebookShare {
                     @Override
                     public void onSuccess(AppInviteDialog.Result result)
                     {
+                        shareType = 0;
                         shareAppListener.ShareSucces(result);
                     }
                     @Override
                     public void onCancel()
                     {
+                        shareType = 0;
                         shareAppListener.ShareCancel();
                     }
                     @Override
                     public void onError(FacebookException e)
                     {
+                        shareType = 0;
                         shareAppListener.ShareError(e);
                     }
                 });
@@ -138,8 +149,10 @@ public class FacebookShare {
                 .build();
         if (shareDialogfxPic.canShow(content))
             shareDialogfxPic.show(content, ShareDialog.Mode.AUTOMATIC);
-        else
+        else {
+            shareType = 0;
             shareListener.ShareShowError();
+        }
     }
     public void ShareFriend(byte[] arg,FacebookShareListener sfListener) {
         shareType = 3;
@@ -153,8 +166,10 @@ public class FacebookShare {
                 .build();
         if (shareDialogfriend.canShow(content))
             shareDialogfriend.show(content);
-        else
+        else {
+            shareType = 0;
             shareListener.ShareShowError();
+        }
     }
     public void ShareInvitation(String appUrl,String imgUrl,FacebookShareAppListener sfListener) {
         shareType = 4;
