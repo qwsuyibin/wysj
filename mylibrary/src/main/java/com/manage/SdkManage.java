@@ -84,5 +84,7 @@ public class SdkManage {
             googlePay.onActivityResult(requestCode,resultCode,data);
         if(facebookLogin != null)
             facebookLogin.onActivityResult(requestCode,resultCode,data);
+        if(facebookShare != null)
+            facebookShare.onActivityResult(requestCode,resultCode,data);
     }
 }
