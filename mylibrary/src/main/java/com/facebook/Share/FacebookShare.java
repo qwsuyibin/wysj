@@ -10,9 +10,11 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.share.Sharer;
+import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.AppInviteDialog;
 import com.facebook.share.widget.MessageDialog;
 import com.facebook.share.widget.ShareDialog;
 
@@ -21,11 +23,18 @@ import com.facebook.share.widget.ShareDialog;
  */
 
 public class FacebookShare {
+    private int shareType = 0;
     private Activity mainActivity;
     private CallbackManager callbackManagerfx;
+    private CallbackManager callbackManagerfxPic;
     private CallbackManager callbackManagerFriend;
+    private CallbackManager callbackManageryq;
+    private ShareDialog shareDialogfx;
+    private ShareDialog shareDialogfxPic;
+    private ShareDialog shareDialogfriend;
+    private AppInviteDialog appInviteDialog;
     private FacebookShareListener shareListener;
-    private FacebookShareFriendListener friendShareListener;
+    private FacebookShareAppListener shareAppListener;
     public FacebookShare(Activity activity)
     {
         mainActivity = activity;
@@ -33,24 +42,93 @@ public class FacebookShare {
     }
     private void init()
     {
-    }
-    public void Share(FacebookShareListener sListener,String contentUrl)
-    {
-        this.shareListener = sListener;
+
         callbackManagerfx = CallbackManager.Factory.create();
-        ShareDialog shareDialog = new ShareDialog(mainActivity);
-        shareDialog.registerCallback(callbackManagerfx,creatSharerCallback());
+        shareDialogfx = new ShareDialog(mainActivity);
+        shareDialogfx.registerCallback(callbackManagerfx,
+                new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        shareListener.ShareSucces(result);
+                    }
+                    @Override
+                    public void onCancel() {
+                        shareListener.ShareCancel();
+                    }
+                    @Override
+                    public void onError(FacebookException error) {
+                        shareListener.ShareError(error);
+                    }
+                });
+
+        callbackManagerfxPic = CallbackManager.Factory.create();
+        shareDialogfxPic = new ShareDialog(mainActivity);
+        shareDialogfxPic.registerCallback(callbackManagerfxPic,
+                new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        shareListener.ShareSucces(result);
+                    }
+                    @Override
+                    public void onCancel() {
+                        shareListener.ShareCancel();
+                    }
+                    @Override
+                    public void onError(FacebookException error) {
+                        shareListener.ShareError(error);
+                    }
+                });
+
+        callbackManagerFriend = CallbackManager.Factory.create();
+        shareDialogfriend = new ShareDialog(mainActivity);
+        shareDialogfriend.registerCallback(callbackManagerFriend,new FacebookCallback<Sharer.Result>() {
+                    @Override
+                    public void onSuccess(Sharer.Result result) {
+                        shareListener.ShareSucces(result);
+                    }
+                    @Override
+                    public void onCancel() {
+                        shareListener.ShareCancel();
+                    }
+                    @Override
+                    public void onError(FacebookException error) {
+                        shareListener.ShareError(error);
+                    }
+                });
+
+        appInviteDialog = new AppInviteDialog(mainActivity);
+        callbackManageryq = CallbackManager.Factory.create();
+        appInviteDialog.registerCallback(callbackManageryq, new FacebookCallback<AppInviteDialog.Result>(){
+                    @Override
+                    public void onSuccess(AppInviteDialog.Result result)
+                    {
+                        shareAppListener.ShareSucces(result);
+                    }
+                    @Override
+                    public void onCancel()
+                    {
+                        shareAppListener.ShareCancel();
+                    }
+                    @Override
+                    public void onError(FacebookException e)
+                    {
+                        shareAppListener.ShareError(e);
+                    }
+                });
+    }
+    public void Share(String contentUrl,FacebookShareListener sListener)
+    {
+        shareType = 1;
+        this.shareListener = sListener;
         ShareLinkContent linkContent = new ShareLinkContent.Builder()
                 .setContentUrl(Uri.parse(contentUrl))
                 .build();
-        shareDialog.show(linkContent);
+        shareDialogfx.show(linkContent);
     }
-    public void Share(FacebookShareListener sListener,byte[] arg)
+    public void Share(byte[] arg,FacebookShareListener sListener)
     {
+        shareType = 2;
         this.shareListener = sListener;
-        callbackManagerfx = CallbackManager.Factory.create();
-        ShareDialog shareDialog = new ShareDialog(mainActivity);
-        shareDialog.registerCallback(callbackManagerfx,creatSharerCallback());
         Bitmap image = BitmapFactory.decodeByteArray(arg, 0, arg.length);
         SharePhoto photo = new SharePhoto.Builder()
                 .setBitmap(image)
@@ -58,19 +136,14 @@ public class FacebookShare {
         SharePhotoContent content = new SharePhotoContent.Builder()
                 .addPhoto(photo)
                 .build();
-        if (shareDialog.canShow(content))
-            shareDialog.show(content, ShareDialog.Mode.AUTOMATIC);
+        if (shareDialogfxPic.canShow(content))
+            shareDialogfxPic.show(content, ShareDialog.Mode.AUTOMATIC);
         else
-        {
             shareListener.ShareShowError();
-        }
     }
-    public void ShareFriend(FacebookShareFriendListener sfListener, byte[] arg) {
-
-        this.friendShareListener = sfListener;
-        callbackManagerFriend = CallbackManager.Factory.create();
-        MessageDialog messageDialog = new MessageDialog(mainActivity);
-        messageDialog.registerCallback(callbackManagerFriend,creatFriendSharerCallback() );
+    public void ShareFriend(byte[] arg,FacebookShareListener sfListener) {
+        shareType = 3;
+        this.shareListener = sfListener;
         Bitmap image = BitmapFactory.decodeByteArray(arg, 0, arg.length);
         SharePhoto photo = new SharePhoto.Builder()
                 .setBitmap(image)
@@ -78,64 +151,36 @@ public class FacebookShare {
         SharePhotoContent content = new SharePhotoContent.Builder()
                 .addPhoto(photo)
                 .build();
-        if (messageDialog.canShow(content))
-            messageDialog.show(content);
+        if (shareDialogfriend.canShow(content))
+            shareDialogfriend.show(content);
         else
-        {
-            callbackManagerFriend = null;
-            friendShareListener.ShareShowError();
-        }
-
+            shareListener.ShareShowError();
+    }
+    public void ShareInvitation(String appUrl,String imgUrl,FacebookShareAppListener sfListener) {
+        shareType = 4;
+        this.shareAppListener = sfListener;
+        AppInviteContent content = new AppInviteContent.Builder()
+                .setApplinkUrl(imgUrl)
+                .setPreviewImageUrl(appUrl)
+                .build();
+        appInviteDialog.show(content);
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (callbackManagerfx != null)
-            callbackManagerfx.onActivityResult(requestCode, resultCode, data);
-        if (callbackManagerFriend != null)
-            callbackManagerFriend.onActivityResult(requestCode, resultCode, data);
-    }
-    private FacebookCallback<Sharer.Result> creatSharerCallback()
-    {
-        return new FacebookCallback<Sharer.Result>() {
-            @Override
-            public void onSuccess(Sharer.Result result) {
-                callbackManagerfx = null;
-                shareListener.ShareSucces(result);
-            }
-
-            @Override
-            public void onCancel() {
-                callbackManagerfx = null;
-                shareListener.ShareCancel();
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                callbackManagerfx = null;
-                shareListener.ShareError(error);
-            }
-        };
-    }
-    private FacebookCallback<Sharer.Result> creatFriendSharerCallback()
-    {
-        return new FacebookCallback<Sharer.Result>() {
-            @Override
-            public void onSuccess(Sharer.Result result) {
-                callbackManagerFriend = null;
-                friendShareListener.ShareSucces(result);
-            }
-
-            @Override
-            public void onCancel() {
-                callbackManagerFriend = null;
-                friendShareListener.ShareCancel();
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                callbackManagerFriend = null;
-                friendShareListener.ShareError(error);
-            }
-        };
+        switch (shareType)
+        {
+            case 1:
+                callbackManagerfx.onActivityResult(requestCode, resultCode, data);
+                break;
+            case 2:
+                callbackManagerfxPic.onActivityResult(requestCode, resultCode, data);
+                break;
+            case 3:
+                callbackManagerFriend.onActivityResult(requestCode, resultCode, data);
+                break;
+            case 4:
+                callbackManageryq.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
     }
 }

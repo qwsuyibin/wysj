@@ -48,12 +48,12 @@ public class KochavaLogger {
     {
         Tracker.sendEvent(new Tracker.Event(name).setUserId(uid));
     }
-    public void SendTracker(String name,String uid,String pmoney)
+    public void SendTracker(String name,String uid,String pmoney,String currency)
     {
-        Tracker.sendEvent(new Tracker.Event(name).setUserId(uid).setPrice(Double.valueOf(pmoney)));
+        Tracker.sendEvent(new Tracker.Event(name).setUserId(uid).setPrice(Double.valueOf(pmoney)).setCurrency(currency));
     }
-    public void SendTrackerAddMoney(String name,String uid,String pmoney)
+    public void SendTrackerAddMoney(String name,String uid,String pmoney,String currency)
     {
-        Tracker.sendEvent(new Tracker.Event(name).setUserId(uid).setPrice(Double.valueOf(pmoney)).addCustom("revenue",pmoney));
+        Tracker.sendEvent(new Tracker.Event(name).setUserId(uid).setPrice(Double.valueOf(pmoney)).addCustom("revenue",pmoney).setCurrency(currency));
     }
 }
