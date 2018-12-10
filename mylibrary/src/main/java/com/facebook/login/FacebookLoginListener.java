@@ -1,4 +1,5 @@
 package com.facebook.login;
+import com.facebook.AccessToken;
 import com.facebook.FacebookException;
 
 /**
@@ -6,7 +7,7 @@ import com.facebook.FacebookException;
  */
 
 public interface FacebookLoginListener {
-    void LoginSucces(LoginResult account);
+    void LoginSucces(AccessToken account);
     void LoginCancel();
     void LoginError(FacebookException error);
 }

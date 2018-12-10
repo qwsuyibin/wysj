@@ -3,6 +3,7 @@ package com.facebook.login;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -23,9 +24,16 @@ public class FacebookLogin {
     public void Login(FacebookLoginListener loginListener)
     {
         this.loginListener = loginListener;
-        LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile", "user_friends"));
-        callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().registerCallback(callbackManager, creatCallback());
+        if(AccessToken.getCurrentAccessToken()!=null&&AccessToken.getCurrentAccessToken().getUserId() != "")
+        {
+            callbackManager = null;
+            loginListener.LoginSucces(AccessToken.getCurrentAccessToken());
+        }
+        else {
+            LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile", "user_friends"));
+            callbackManager = CallbackManager.Factory.create();
+            LoginManager.getInstance().registerCallback(callbackManager, creatCallback());
+        }
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -38,7 +46,7 @@ public class FacebookLogin {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 callbackManager = null;
-                loginListener.LoginSucces(loginResult);
+                loginListener.LoginSucces(loginResult.getAccessToken());
             }
             @Override
             public void onCancel() {
