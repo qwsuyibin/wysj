@@ -36,7 +36,6 @@ public class FacebookLogger {
     {
         Bundle parameters = new Bundle();
         parameters.putString(AppEventsConstants.EVENT_PARAM_CURRENCY, pmoney);
-        parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "1");
         parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, pid);
         fblogger.logEvent(name,parameters);
     }
@@ -48,7 +47,6 @@ public class FacebookLogger {
         Bundle parameters = new Bundle();
         parameters.putString(AppEventsConstants.EVENT_PARAM_NUM_ITEMS,"1");
         parameters.putString(AppEventsConstants.EVENT_PARAM_CURRENCY, currency);
-        parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_TYPE, "1");
         parameters.putString(AppEventsConstants.EVENT_PARAM_CONTENT_ID, pid);
         fblogger.logEvent(name,Double.valueOf(pmoney),parameters);
     }

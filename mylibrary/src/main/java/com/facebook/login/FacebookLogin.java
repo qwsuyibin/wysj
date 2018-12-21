@@ -21,19 +21,24 @@ public class FacebookLogin {
     private void init()
     {
     }
-    public void Login(FacebookLoginListener loginListener)
+    public void AutoLogin(FacebookLoginListener loginListener)
     {
         this.loginListener = loginListener;
         if(AccessToken.getCurrentAccessToken()!=null&&AccessToken.getCurrentAccessToken().getUserId() != "")
         {
             callbackManager = null;
             loginListener.LoginSucces(AccessToken.getCurrentAccessToken());
+        }else {
+            callbackManager = null;
+            loginListener.LoginCancel();
         }
-        else {
-            LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile", "user_friends"));
-            callbackManager = CallbackManager.Factory.create();
-            LoginManager.getInstance().registerCallback(callbackManager, creatCallback());
-        }
+    }
+    public void Login(FacebookLoginListener loginListener)
+    {
+        this.loginListener = loginListener;
+        LoginManager.getInstance().logInWithReadPermissions(mainActivity, Arrays.asList("public_profile", "user_friends"));
+        callbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(callbackManager, creatCallback());
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
